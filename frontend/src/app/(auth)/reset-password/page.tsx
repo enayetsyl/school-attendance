@@ -5,7 +5,6 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
-import axios from 'axios';
 import { z } from 'zod';
 import { toast } from 'sonner';
 
@@ -19,7 +18,8 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { API_BASE, TENANT_ID } from '@/constant';
+import api from '@/lib/api';
+import { AxiosError } from 'axios';
 
 // 1) Zod schema: newPassword + confirmPassword must match
 const resetSchema = z
@@ -34,6 +34,12 @@ const resetSchema = z
 
 type ResetFormData = z.infer<typeof resetSchema>;
 
+// 2) Shape of your API error payload
+interface ApiError {
+  message: string;
+}
+
+
 export default function ResetPasswordPage() {
   const router = useRouter();
   const params = useSearchParams();
@@ -44,29 +50,29 @@ export default function ResetPasswordPage() {
     defaultValues: { newPassword: '', confirmPassword: '' },
   });
 
-  // 2) Mutation: POST { token, newPassword } to backend
-  const mutation = useMutation({
-    mutationFn: async (data: ResetFormData) => {
-      await axios.post(
-        `${API_BASE}/auth/password-reset/confirm`,
+  // 3) Mutation: POST { token, newPassword } to backend
+  const mutation = useMutation<
+  void,   
+  AxiosError<ApiError>, 
+  ResetFormData
+>({
+    mutationFn: async (data) => {
+      await api.post(
+        '/auth/password-reset/confirm',
         {
           token,
           newPassword: data.newPassword,
         },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            'X-Tenant-ID': TENANT_ID,
-          },
-        }
+       
       );
     },
     onSuccess: () => {
       toast.success('Password reset successful! Please log in.');
       router.push('/login');
     },
-    onError: (err: any) => {
-      const msg = err?.response?.data?.message ?? err.message;
+    onError: (err) => {
+      // err is now strongly typed, no more `any`
+      const msg = err.response?.data?.message ?? err.message;
       toast.error(`Reset failed: ${msg}`);
     },
   });

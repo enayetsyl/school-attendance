@@ -19,6 +19,7 @@ import { toast } from 'sonner';
 import Link from 'next/link';
 import api from '@/lib/api';
 import { IGlobalUser } from '@/interfaces/globalUser';
+import { AxiosError } from 'axios';
 
 // 1) Zod schema for login
 const loginSchema = z.object({
@@ -26,6 +27,11 @@ const loginSchema = z.object({
   password: z.string().min(1, 'Password is required'),
 });
 type LoginFormData = z.infer<typeof loginSchema>;
+
+// 2) Define the shape of your API’s error payload
+interface ApiError {
+  message: string;
+}
 
 
 export default function LoginPage() {
@@ -35,7 +41,11 @@ export default function LoginPage() {
   });
 
   // 3) Mutation to call backend + console.log token
-  const mutation = useMutation({
+  const mutation = useMutation<
+  { accessToken: string; refreshToken: string; globalUser: IGlobalUser },
+  AxiosError<ApiError>,
+  LoginFormData 
+>({
     mutationFn: async (data: LoginFormData) => {
       const { data: tokens } = await api.post('/auth/login', data);
       return tokens as { accessToken: string; refreshToken: string, globalUser:IGlobalUser };
@@ -49,7 +59,8 @@ export default function LoginPage() {
       // 4) Notify & redirect
       toast.success('Login successful!');
     },
-    onError: (err: any) => {
+    onError: (err) => {
+      // `err` is now an AxiosError<ApiError>, not `any`
       const msg = err.response?.data?.message ?? err.message;
       toast.error(`Login failed: ${msg}`);
     },

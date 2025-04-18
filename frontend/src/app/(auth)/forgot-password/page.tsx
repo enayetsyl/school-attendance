@@ -3,7 +3,7 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { z } from 'zod';
 import { toast } from 'sonner';
 import Link from 'next/link';
@@ -20,11 +20,19 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { API_BASE, TENANT_ID } from '@/constant';
 
+
 // 1) Zod schema
 const forgotSchema = z.object({
   email: z.string().email('Invalid email address'),
 });
 type ForgotFormData = z.infer<typeof forgotSchema>;
+
+// define the shape of your API’s error response
+interface ApiError {
+  message: string
+}
+
+type Variables = { email: string; redirectUrl?: string }
 
 export default function ForgotPasswordPage() {
   const form = useForm<ForgotFormData>({
@@ -33,7 +41,11 @@ export default function ForgotPasswordPage() {
   });
 
   // 2) Mutation calls your POST /auth/password-reset
-  const mutation = useMutation({
+  const mutation = useMutation<
+  void,                     // what your mutationFn returns
+  AxiosError<ApiError>,     // the error type
+  Variables
+>({
     mutationFn: async ({ email, redirectUrl }: { email: string; redirectUrl?: string }) => {
       return axios.post(
         `${API_BASE}/auth/password-reset`,
@@ -46,9 +58,10 @@ export default function ForgotPasswordPage() {
         'If that email is in our system, you’ll receive a reset link shortly.'
       );
     },
-    onError: (err: any) => {
-      const msg = err?.response?.data?.message ?? err.message;
-      toast.error(`Request failed: ${msg}`);
+    onError: (err) => {
+      // err is now an AxiosError<ApiError>, no more `any`
+      const msg = err.response?.data?.message ?? err.message
+      toast.error(`Request failed: ${msg}`)
     },
   });
 

@@ -3,30 +3,37 @@
 
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useEffect, useRef } from 'react';
-import axios from 'axios';
 import { useMutation } from '@tanstack/react-query';
 import { toast } from 'sonner';
-
 import { Button } from '@/components/ui/button';
-import { API_BASE, TENANT_ID } from '@/constant';
+import api from '@/lib/api';
+import { AxiosError } from 'axios';
+
+// 1) Shape of your API error response
+interface ApiError {
+  message: string;
+}
 
 export default function VerifyEmailPage() {
   const params = useSearchParams();
   const router = useRouter();
   const token = params.get('token') ?? '';
 
-  const verifyMutation = useMutation({
+  const verifyMutation = useMutation<
+  void, 
+  AxiosError<ApiError> 
+>({
     mutationFn: async () => {
-      await axios.get(`${API_BASE}/auth/verify-email`, {
+      await api.get('/auth/verify-email', {
         params: { token },
-        headers: { 'X-Tenant-ID': TENANT_ID },
       });
     },
     onSuccess: () => {
       toast.success('Your email has been verified!');
     },
-    onError: (err: any) => {
-      const msg = err?.response?.data?.message ?? err.message;
+    onError: (err) => {
+      // err is now typed, no `any`
+      const msg = err.response?.data?.message ?? err.message;
       toast.error(`Verification failed: ${msg}`);
     },
   });
@@ -41,6 +48,11 @@ useEffect(() => {
   }
 }, [token, verifyMutation]);
 
+// Extract a typed error message for render
+const errorMsg =
+verifyMutation.error?.response?.data?.message ??
+'Something went wrong. Please try again.';
+
   return (
     <div className="flex flex-col items-center justify-center h-screen p-4">
       <h1 className="text-2xl font-semibold mb-4">Verify Your Email</h1>
@@ -51,8 +63,7 @@ useEffect(() => {
         <p>Verifying your email, please wait…</p>
       ) : verifyMutation.isError ? (
         <p className="text-red-600">
-          {(verifyMutation.error as any)?.response?.data?.message ??
-            'Something went wrong. Please try again.'}
+          {errorMsg}
         </p>
       ) : (
         <p className="mb-4">
@@ -69,7 +80,9 @@ useEffect(() => {
 
       {/* Go to Login Button on success */}
       {token && verifyMutation.isSuccess && (
-        <Button onClick={() => router.push('/login')}>
+        <Button 
+        className='cursor-pointer'
+        onClick={() => router.push('/login')}>
           Go to Login
         </Button>
       )}
