@@ -17,7 +17,10 @@ import cors from 'cors';
 const app = express();
 
 // 1. Global Middleware
-
+app.use((req: Request, _res: Response, next: NextFunction) => {
+  console.log('CORS origin header:', req.headers.origin);
+  next();
+});
 // Enable CORS
 app.use(
   cors({

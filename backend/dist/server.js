@@ -18,6 +18,10 @@ const rateLimiter_1 = require("./utils/rateLimiter");
 const cors_1 = __importDefault(require("cors"));
 const app = (0, express_1.default)();
 // 1. Global Middleware
+app.use((req, _res, next) => {
+    console.log('CORS origin header:', req.headers.origin);
+    next();
+});
 // Enable CORS
 app.use((0, cors_1.default)({
     origin: [
