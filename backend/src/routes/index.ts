@@ -6,6 +6,7 @@ import { Router } from 'express';
 // import studentRoutes from './students';
 import attendanceRoutes from './attendance/attendanceRoute';
 import studentRoutes from './student/student.routes';
+import studentAttendanceReportRoutes from './studentAttendanceReport/studentAttendanceReport.route';
 // import reportRoutes from './reports';
 
 const router = Router();
@@ -17,6 +18,7 @@ const featureRouters: Array<{ path: string; handler: Router }> = [
   // { path: '/reports', handler: reportRoutes },
   { path: '/attendance', handler: attendanceRoutes },
   { path: '/students', handler: studentRoutes },
+  { path: '/reports', handler: studentAttendanceReportRoutes },
 ];
 
 // mount each feature under its path
