@@ -42,10 +42,13 @@ export default function AttendancePage() {
   const qc = useQueryClient();
 
   // format date for API
-  const dateStr = useMemo(
-    () => selectedDate.toISOString().split("T")[0],
-    [selectedDate]
-  );
+  const dateStr = useMemo(() => {
+    const y = selectedDate.getFullYear();
+    const m = String(selectedDate.getMonth() + 1).padStart(2, "0");
+    const d = String(selectedDate.getDate()).padStart(2, "0");
+    return `${y}-${m}-${d}`;
+  }, [selectedDate]);
+  
 
   // fetch attendance when refetch() is called
   const { data, isFetching, refetch } = useQuery<AttendanceEntry[]>({

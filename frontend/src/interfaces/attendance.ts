@@ -1,16 +1,3 @@
-// src/interfaces/attendance.ts
-// export interface AttendanceEntry {
-//   studentId: string;
-//   name: string;
-//   currentClass: number;
-//   currentSection?: string;
-//   // new flag:
-//   present: boolean;
-//   absent: boolean;
-//   lateEntry?: string;
-//   earlyLeave?: string;
-//   comment?: string;
-// }
 
 export interface AttendanceByDate {
   date: string;

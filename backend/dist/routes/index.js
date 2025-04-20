@@ -10,6 +10,7 @@ const express_1 = require("express");
 // import studentRoutes from './students';
 const attendanceRoute_1 = __importDefault(require("./attendance/attendanceRoute"));
 const student_routes_1 = __importDefault(require("./student/student.routes"));
+const studentAttendanceReport_route_1 = __importDefault(require("./studentAttendanceReport/studentAttendanceReport.route"));
 // import reportRoutes from './reports';
 const router = (0, express_1.Router)();
 // define a small config for looping
@@ -19,6 +20,7 @@ const featureRouters = [
     // { path: '/reports', handler: reportRoutes },
     { path: '/attendance', handler: attendanceRoute_1.default },
     { path: '/students', handler: student_routes_1.default },
+    { path: '/reports', handler: studentAttendanceReport_route_1.default },
 ];
 // mount each feature under its path
 featureRouters.forEach(({ path, handler }) => {
