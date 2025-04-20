@@ -25,6 +25,7 @@ import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { useEffect, useState } from 'react';
 import api from '@/lib/api'; 
+import { AxiosError } from 'axios';
 
 // 1. Define roles as a const tuple so z.enum can infer literal types 
 const roles = ['admin', 'principle', 'teacher', 'guardian', 'operator', 'co-ordinator'] as const;
@@ -48,7 +49,9 @@ const registerSchema = z
 
 type RegisterFormData = z.infer<typeof registerSchema>;
 
-
+interface ApiErrorResponse {
+  message: string;
+}
 
 export default function RegisterForm() {
   const router = useRouter();
@@ -74,7 +77,11 @@ export default function RegisterForm() {
     },
   });
 
-  const mutation = useMutation({
+  const mutation = useMutation<
+  unknown,
+  AxiosError<ApiErrorResponse>,
+  RegisterFormData
+>({
     mutationFn: async (data: RegisterFormData) => {
       if (!frontendUrl) 
         {
@@ -94,7 +101,7 @@ export default function RegisterForm() {
       queryClient.invalidateQueries({ queryKey: ['currentUser'] });
       router.push('/login');
     },
-    onError: (err: any) => {
+    onError: (err) => {
       const msg = err?.response?.data?.message ?? err.message;
       toast.error(`Registration failed: ${msg}`);
     },
