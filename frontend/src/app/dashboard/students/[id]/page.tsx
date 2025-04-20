@@ -8,6 +8,13 @@ import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import Link from 'next/link';
 import { StudentDetail } from '@/interfaces/student';
+import { AxiosError } from 'axios';
+
+interface ApiErrorResponse {
+  error: {
+    message: string;
+  };
+}
 
 export default function StudentDetailPage() {
   const { id } = useParams();
@@ -21,14 +28,14 @@ export default function StudentDetailPage() {
   });
 
 
-  const del = useMutation({
+  const del = useMutation<void, AxiosError<ApiErrorResponse>>({
     mutationFn: () => api.delete(`/students/${id}`),
     onSuccess: () => {
       toast.success('Deleted');
       qc.invalidateQueries({ queryKey: ['students'] });
       router.push('/dashboard/students');
     },
-    onError: (e: any) =>
+    onError: (e) =>
       toast.error(e.response?.data?.error?.message || 'Delete failed'),
   });
 
