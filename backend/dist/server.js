@@ -9,34 +9,16 @@ const config_1 = __importDefault(require("./config"));
 const db_1 = require("./config/db");
 const routes_1 = __importDefault(require("./routes"));
 // Middleware
-// import { corsMiddleware } from './middleware/cors';
+const cors_1 = require("./middleware/cors");
 const errorHandler_1 = require("./middleware/errorHandler");
 const notFound_1 = require("./middleware/notFound");
 // Logger
 const logger_1 = __importDefault(require("./utils/logger"));
 const rateLimiter_1 = require("./utils/rateLimiter");
-const cors_1 = __importDefault(require("cors"));
 const app = (0, express_1.default)();
-app.use((req, _res, next) => {
-    console.log('→', req.method, req.originalUrl, 'Origin:', req.headers.origin);
-    next();
-});
-// 2. Enable CORS
-const whitelist = [
-    'http://localhost:3000',
-    'https://school-attendance-beta.vercel.app',
-    'https://scd-school-attendance.vercel.app',
-];
-app.use((0, cors_1.default)({
-    origin: (incomingOrigin, callback) => {
-        // allow same‑origin or whitelist matches
-        if (!incomingOrigin || whitelist.includes(incomingOrigin)) {
-            return callback(null, true);
-        }
-        return callback(new Error(`CORS denied for ${incomingOrigin}`));
-    },
-    credentials: true,
-}));
+// 1. Global Middleware
+// Enable CORS
+app.use(cors_1.corsMiddleware);
 // Parse JSON bodies
 app.use(express_1.default.json());
 // Request logging
