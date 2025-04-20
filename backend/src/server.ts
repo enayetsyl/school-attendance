@@ -5,20 +5,21 @@ import { connectDB } from './config/db';
 import router from './routes';
 
 // Middleware
-import { corsMiddleware } from './middleware/cors';
+// import { corsMiddleware } from './middleware/cors';
 import { errorHandler } from './middleware/errorHandler';
 import { notFound } from './middleware/notFound';
 
 // Logger
 import logger from './utils/logger';
 import { authLimiter } from './utils/rateLimiter';
+import cors from 'cors';
 
 const app = express();
 
 // 1. Global Middleware
 
 // Enable CORS
-app.use(corsMiddleware);
+app.use(cors({ origin: ['http://localhost:5173'], credentials: true }));
 
 // Parse JSON bodies
 app.use(express.json());

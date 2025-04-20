@@ -9,16 +9,17 @@ const config_1 = __importDefault(require("./config"));
 const db_1 = require("./config/db");
 const routes_1 = __importDefault(require("./routes"));
 // Middleware
-const cors_1 = require("./middleware/cors");
+// import { corsMiddleware } from './middleware/cors';
 const errorHandler_1 = require("./middleware/errorHandler");
 const notFound_1 = require("./middleware/notFound");
 // Logger
 const logger_1 = __importDefault(require("./utils/logger"));
 const rateLimiter_1 = require("./utils/rateLimiter");
+const cors_1 = __importDefault(require("cors"));
 const app = (0, express_1.default)();
 // 1. Global Middleware
 // Enable CORS
-app.use(cors_1.corsMiddleware);
+app.use((0, cors_1.default)({ origin: ['http://localhost:5173'], credentials: true }));
 // Parse JSON bodies
 app.use(express_1.default.json());
 // Request logging
