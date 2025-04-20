@@ -8,7 +8,8 @@ const express_1 = __importDefault(require("express"));
 const config_1 = __importDefault(require("./config"));
 const db_1 = require("./config/db");
 const routes_1 = __importDefault(require("./routes"));
-const cors_1 = __importDefault(require("cors"));
+// Middleware
+const cors_1 = require("./middleware/cors");
 const errorHandler_1 = require("./middleware/errorHandler");
 const notFound_1 = require("./middleware/notFound");
 // Logger
@@ -16,26 +17,8 @@ const logger_1 = __importDefault(require("./utils/logger"));
 const rateLimiter_1 = require("./utils/rateLimiter");
 const app = (0, express_1.default)();
 // 1. Global Middleware
-const allowed = [
-    'https://school-attendance-fe-livid.vercel.app',
-    'http://localhost:3000',
-];
-// 2) CORS middleware:
-app.use((0, cors_1.default)({
-    origin: (origin, cb) => {
-        if (!origin || allowed.includes(origin)) {
-            cb(null, true);
-        }
-        else {
-            cb(new Error(`Origin ${origin} not allowed by CORS`));
-        }
-    },
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true,
-}));
-// 3) Now your routes:
-app.options('*', (0, cors_1.default)());
+// Enable CORS
+app.use(cors_1.corsMiddleware);
 // Parse JSON bodies
 app.use(express_1.default.json());
 // Request logging
