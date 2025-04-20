@@ -10,15 +10,17 @@ interface RetryConfig extends AxiosRequestConfig {
   _retry?: boolean;
 }
 
+interface QueuedRequest {
+  resolve: (response: AxiosResponse) => void;
+  reject: (error: AxiosError) => void;
+  config: RetryConfig;
+}
+
 let isRefreshing = false;
-const failedQueue: Array<{
-  resolve: (r: AxiosResponse) => void;
-  reject: (e: any) => void;
-  config: AxiosRequestConfig;
-}> = [];
+const failedQueue: QueuedRequest[] = [];
 
 // helper to replay queued requests after refresh
-const processQueue = (error: any, token: string | null = null) => {
+const processQueue = (error: AxiosError | null, token: string | null = null): void => {
   failedQueue.forEach(({ resolve, reject, config }) => {
     if (error) {
       reject(error);
