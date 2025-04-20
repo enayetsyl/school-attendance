@@ -2,7 +2,7 @@
 import cors, { CorsOptions } from 'cors';
 
 const allowedOrigins = [
-  'https://school-attendance-fe-livid.vercel.app',
+  'https://scd-school-attendance.vercel.app',
   'http://localhost:3000',
 ];
 

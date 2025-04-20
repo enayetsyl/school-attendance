@@ -7,7 +7,7 @@ exports.corsMiddleware = void 0;
 // src/middleware/cors.ts
 const cors_1 = __importDefault(require("cors"));
 const allowedOrigins = [
-    'https://school-attendance-fe-livid.vercel.app',
+    'https://scd-school-attendance.vercel.app',
     'http://localhost:3000',
 ];
 const corsOptions = {
