@@ -19,7 +19,17 @@ const app = express();
 // 1. Global Middleware
 
 // Enable CORS
-app.use(cors({ origin: ['http://localhost:3000', 'https://school-attendance-beta.vercel.app'], credentials: true }));
+app.use(
+  cors({
+    origin: [
+      'http://localhost:3000',
+      'https://school‑attendance‑beta.vercel.app',
+      'https://scd‑school‑attendance.vercel.app'  
+    ],
+    credentials: true
+  })
+);
+
 
 // Parse JSON bodies
 app.use(express.json());
