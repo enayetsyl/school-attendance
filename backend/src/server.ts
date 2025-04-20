@@ -3,6 +3,7 @@ import express, { Request, Response, NextFunction } from 'express';
 import config from './config';
 import { connectDB } from './config/db';
 import router from './routes';
+import cors from 'cors'
 
 // Middleware
 import { corsMiddleware } from './middleware/cors';
@@ -17,8 +18,27 @@ const app = express();
 
 // 1. Global Middleware
 
-// Enable CORS
-app.use(corsMiddleware);
+const allowed = [
+  'https://school-attendance-fe-livid.vercel.app',
+  'http://localhost:3000',
+]
+
+// 2) CORS middleware:
+app.use(cors({
+  origin: (origin, cb) => {
+    if (!origin || allowed.includes(origin)) {
+      cb(null, true)
+    } else {
+      cb(new Error(`Origin ${origin} not allowed by CORS`))
+    }
+  },
+  methods: ['GET','POST','PUT','PATCH','DELETE','OPTIONS'],
+  allowedHeaders: ['Content-Type','Authorization'],
+  credentials: true,
+}))
+
+// 3) Now your routes:
+app.options('*', cors()) 
 
 // Parse JSON bodies
 app.use(express.json());
