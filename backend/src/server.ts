@@ -16,20 +16,28 @@ import cors from 'cors';
 
 const app = express();
 
-// 1. Global Middleware
-app.use((req: Request, _res: Response, next: NextFunction) => {
-  console.log('CORS origin header:', req.headers.origin);
+app.use((req, _res, next) => {
+  console.log('→', req.method, req.originalUrl, 'Origin:', req.headers.origin);
   next();
 });
-// Enable CORS
+
+// 2. Enable CORS
+const whitelist = [
+  'http://localhost:3000',
+  'https://school-attendance-beta.vercel.app',
+  'https://scd-school-attendance.vercel.app',
+];
+
 app.use(
   cors({
-    origin: [
-      'http://localhost:3000',
-      'https://school‑attendance‑beta.vercel.app',
-      'https://scd‑school‑attendance.vercel.app'  
-    ],
-    credentials: true
+    origin: (incomingOrigin, callback) => {
+      // allow same‑origin or whitelist matches
+      if (!incomingOrigin || whitelist.includes(incomingOrigin)) {
+        return callback(null, true);
+      }
+      return callback(new Error(`CORS denied for ${incomingOrigin}`));
+    },
+    credentials: true,
   })
 );
 

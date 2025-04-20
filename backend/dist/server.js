@@ -17,19 +17,25 @@ const logger_1 = __importDefault(require("./utils/logger"));
 const rateLimiter_1 = require("./utils/rateLimiter");
 const cors_1 = __importDefault(require("cors"));
 const app = (0, express_1.default)();
-// 1. Global Middleware
 app.use((req, _res, next) => {
-    console.log('CORS origin header:', req.headers.origin);
+    console.log('→', req.method, req.originalUrl, 'Origin:', req.headers.origin);
     next();
 });
-// Enable CORS
+// 2. Enable CORS
+const whitelist = [
+    'http://localhost:3000',
+    'https://school-attendance-beta.vercel.app',
+    'https://scd-school-attendance.vercel.app',
+];
 app.use((0, cors_1.default)({
-    origin: [
-        'http://localhost:3000',
-        'https://school‑attendance‑beta.vercel.app',
-        'https://scd‑school‑attendance.vercel.app'
-    ],
-    credentials: true
+    origin: (incomingOrigin, callback) => {
+        // allow same‑origin or whitelist matches
+        if (!incomingOrigin || whitelist.includes(incomingOrigin)) {
+            return callback(null, true);
+        }
+        return callback(new Error(`CORS denied for ${incomingOrigin}`));
+    },
+    credentials: true,
 }));
 // Parse JSON bodies
 app.use(express_1.default.json());
