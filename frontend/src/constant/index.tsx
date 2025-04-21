@@ -56,7 +56,7 @@ export const NAV_LINKS: INavLink[] = [
   },
   {
     label: 'Reports',
-    href: '/dashboard/report',
+    href: '/dashboard/report/attendance/student',
     allowed: [Role.Admin, Role.Coordinator, Role.Principal],
   },
 ]
