@@ -20,6 +20,7 @@ import Link from 'next/link';
 import api from '@/lib/api';
 import { IGlobalUser } from '@/interfaces/globalUser';
 import { AxiosError } from 'axios';
+import { useRouter } from 'next/navigation';
 
 // 1) Zod schema for login
 const loginSchema = z.object({
@@ -35,6 +36,7 @@ interface ApiError {
 
 
 export default function LoginPage() {
+  const router = useRouter()
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: { email: '', password: '' },
@@ -58,6 +60,8 @@ export default function LoginPage() {
 
       // 4) Notify & redirect
       toast.success('Login successful!');
+      // 5) Navigate to dashboard
+      router.push('/dashboard')
     },
     onError: (err) => {
       // `err` is now an AxiosError<ApiError>, not `any`

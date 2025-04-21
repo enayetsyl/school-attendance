@@ -1,3 +1,6 @@
+import { INavLink } from "@/interfaces/Navbar";
+import { Role } from "./roles";
+
 export const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL!;
 export const TENANT_ID = process.env.NEXT_PUBLIC_TENANT_ID!;
 
@@ -38,3 +41,22 @@ export const contactFieldLabels: Record<
   presentAddress:  "Present Address",
   permanentAddress: "Permanent Address",
 };
+
+
+export const NAV_LINKS: INavLink[] = [
+  {
+    label: 'Attendance',
+    href: '/dashboard/attendance',
+    allowed: [Role.Admin, Role.Coordinator, Role.Principal, Role.Operator],
+  },
+  {
+    label: 'Students',
+    href: '/dashboard/students',
+    allowed: [Role.Admin, Role.Coordinator, Role.Principal, Role.Operator],
+  },
+  {
+    label: 'Reports',
+    href: '/dashboard/report',
+    allowed: [Role.Admin, Role.Coordinator, Role.Principal],
+  },
+]
